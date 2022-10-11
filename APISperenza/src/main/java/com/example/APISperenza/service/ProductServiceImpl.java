@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.example.APISperenza.dto.ProductDTO;
+import com.example.APISperenza.exception.ResourceNotFoundException;
 import com.example.APISperenza.model.Product;
 import com.example.APISperenza.repository.ProductRepository;
 
@@ -32,13 +33,21 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getByIdProduct(long id) {
-        // TODO Auto-generated method stub
-        return null;
+
+        try {
+            return productRepository.findById(id);
+
+        } catch (Exception exception) {
+            throw new ResourceNotFoundException("Le produit avec l'id {0} n'exite pas ", id);
+
+        }
+
     }
 
     @Override
     public void saveProduct(Product product) {
-        // TODO Auto-generated method stub
+
+        productRepository.save(product);
 
     }
 

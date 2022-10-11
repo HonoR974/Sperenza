@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-ApiSperenzaApplication<APISperenza>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.example.APISperenza.ApiSperenzaApplication",
+      "projectName": "APISperenza",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

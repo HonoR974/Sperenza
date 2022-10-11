@@ -11,10 +11,16 @@ import lombok.Setter;
 @Setter
 public class ProductDTO {
 
+    private long id;
+
     private String name;
 
     private float prix;
 
     private float note;
+
+    private float largeur;
+
+    private float longueur;
 
 }
