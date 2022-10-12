@@ -16,7 +16,7 @@ public interface ProductService {
 
     Product updateProductByID(long id, Product product);
 
-    void deleteProductByID(Long id);
+    void deleteProductByID(long id);
 
     // Convert
     Product convertToEntity(ProductDTO productDTO);

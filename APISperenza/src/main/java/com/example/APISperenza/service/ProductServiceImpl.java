@@ -34,14 +34,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getByIdProduct(long id) {
 
-        try {
-            return productRepository.findById(id);
-
-        } catch (Exception exception) {
-            throw new ResourceNotFoundException("Le produit avec l'id {0} n'exite pas ", id);
-
-        }
-
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Le produit avec l'id " + id + " n'existe pas "));
     }
 
     @Override
@@ -52,15 +47,28 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProductByID(long id, Product product) {
-        // TODO Auto-generated method stub
-        return null;
+    public Product updateProductByID(long id, Product productRequest) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Le produit avec l'id " + id + " n'existe pas "));
+
+        product.setName(productRequest.getName());
+        product.setLargeur(productRequest.getLargeur());
+        product.setLongueur(productRequest.getLongueur());
+        product.setNote(productRequest.getNote());
+        product.setPrix(productRequest.getPrix());
+
+        return productRepository.save(product);
     }
 
     @Override
-    public void deleteProductByID(Long id) {
-        // TODO Auto-generated method stub
+    public void deleteProductByID(long id) {
 
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Le produit avec l'id " + id + " n'existe pas "));
+        productRepository.delete(product);
     }
 
     // ------------------------------- Convert -------------------//
