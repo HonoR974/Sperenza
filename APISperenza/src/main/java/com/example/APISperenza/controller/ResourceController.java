@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.APISperenza.dto.ProductDTO;
 import com.example.APISperenza.dto.ResourceDTO;
+import com.example.APISperenza.model.Product;
 import com.example.APISperenza.model.Resource;
+import com.example.APISperenza.service.ProductService;
 import com.example.APISperenza.service.ResourceService;
 
 @RestController
@@ -23,10 +26,15 @@ public class ResourceController {
 
     private final ResourceService resourceService;
 
-    public ResourceController(ResourceService resourceService) {
+    private final ProductService productService;
+
+    public ResourceController(ResourceService resourceService,
+            ProductService productService) {
         this.resourceService = resourceService;
+        this.productService = productService;
     }
 
+    // ------------------------ CRUD -------------------------//
     @GetMapping("all")
     public ResponseEntity<List<ResourceDTO>> all() {
 
@@ -76,4 +84,56 @@ public class ResourceController {
 
     }
 
+    @DeleteMapping("all")
+
+    public ResponseEntity<String> deleteAll() {
+
+        resourceService.deleteAll();
+
+        return new ResponseEntity<>("Deleted All ", HttpStatus.ACCEPTED);
+
+    }
+
+    // ------------------------ CRUD -------------------------//
+
+    // ------------------------ Resource & Prodcut -------------------------//
+
+    // modifie les ressource d'un produit
+    // renvoie un produit avec sa liste de ressource
+    @PostMapping("product/{id_product}")
+    public ResponseEntity<ProductDTO> resourceForProduct(@PathVariable long id_product,
+            @RequestBody ProductDTO productDTO) {
+        // produit a changer
+        Product product = productService.convertToEntity(productDTO);
+
+        // ressource a ajouter
+        List<Resource> lResources = resourceService.convertToListEntity(productDTO.getListResource());
+
+        // produit avec les ressources
+        product.setResourceForCreate(lResources);
+
+        // get le produit changé
+        Product product2 = resourceService.updateResourceForProduct(id_product, product);
+
+        ProductDTO productDTOToSend = productService.convertToDTO(product2);
+
+        return new ResponseEntity<>(productDTOToSend, HttpStatus.ACCEPTED);
+    }
+
+    // renvoie une liste de produit par l'id ressource
+    @GetMapping("findID/{id_resource}")
+    public ResponseEntity<ResourceDTO> getProductByResourceId(@PathVariable long id_resource) {
+        // verifie si il existe en meme temps
+        Resource resource = resourceService.getByResourceId(id_resource);
+
+        List<ProductDTO> lDtos = productService.convertToListDTO(resource.getProductsToCreate());
+
+        // supprime les ressource DTO pour enlever l'effet doublon
+        List<ProductDTO> lDtos2 = productService.deleteResourceDTO(lDtos);
+
+        ResourceDTO resourceDTO = resourceService.convertToDTO(resource);
+        resourceDTO.setListProduct(lDtos2);
+
+        return new ResponseEntity<>(resourceDTO, HttpStatus.ACCEPTED);
+    }
 }

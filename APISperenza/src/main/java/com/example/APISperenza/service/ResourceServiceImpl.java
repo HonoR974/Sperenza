@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.APISperenza.dto.ResourceDTO;
 import com.example.APISperenza.exception.ResourceNotFoundException;
+import com.example.APISperenza.model.Product;
 import com.example.APISperenza.model.Resource;
+import com.example.APISperenza.repository.ProductRepository;
 import com.example.APISperenza.repository.ResourceRepository;
 
 @Service
@@ -17,11 +19,16 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final ResourceRepository resourceRepository;
 
+    private final ProductRepository productRepository;
+
     private final ModelMapper modelMapper;
 
-    public ResourceServiceImpl(ResourceRepository resourceRepository, ModelMapper modelMapper) {
-        this.resourceRepository = resourceRepository;
+    public ResourceServiceImpl(ResourceRepository resourceRepositoryReq,
+            ModelMapper modelMapper,
+            ProductRepository productRepositoryReq) {
+        this.resourceRepository = resourceRepositoryReq;
         this.modelMapper = modelMapper;
+        this.productRepository = productRepositoryReq;
     }
 
     @Override
@@ -36,6 +43,13 @@ public class ResourceServiceImpl implements ResourceService {
         return resourceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "La ressource avec l'id " + id + " n'existe pas "));
+    }
+
+    @Override
+    public Resource getResourceByName(String name) {
+        return resourceRepository.findByName(name)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "La ressource avec le nom : " + name + " n'existe pas "));
     }
 
     @Override
@@ -67,6 +81,13 @@ public class ResourceServiceImpl implements ResourceService {
                         "La ressource avec l'id " + id + " n'existe pas "));
 
         resourceRepository.delete(newResource);
+    }
+
+    @Override
+    public void deleteAll() {
+
+        resourceRepository.deleteAll();
+
     }
 
     // ----------------------- Convert
@@ -106,6 +127,42 @@ public class ResourceServiceImpl implements ResourceService {
         }
 
         return listDtos;
+    }
+
+    // --------------------------- Convert----------------//
+
+    // --------------------------- Resource Product ----------------//
+
+    // renvoie un produit avec sa liste de ressource
+    // modifie les ressource d'un produit
+    @Override
+    public Product updateResourceForProduct(long id_product, Product productRequest) {
+
+        Product product = productRepository.findById(id_product)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "La ressource avec l'id " + id_product + " n'existe pas "));
+
+        System.out.println("\n productRequest " + productRequest.toString());
+
+        // List produit pour ressource
+        List<Product> lProducts = new ArrayList<>();
+        lProducts.add(product);
+
+        List<Resource> lResources = new ArrayList<>();
+
+        for (Resource resourceIterable : productRequest.getResourceForCreate()) {
+
+            // ajout du produit sur la ressource
+            resourceIterable.setProductsToCreate(lProducts);
+
+            // ajout de la ressource au produit
+            lResources.add(resourceIterable);
+
+            resourceRepository.save(resourceIterable);
+        }
+        product.setResourceForCreate(lResources);
+
+        return productRepository.save(product);
     }
 
 }

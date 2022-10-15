@@ -18,6 +18,8 @@ public interface ProductService {
 
     void deleteProductByID(long id);
 
+    void deleteAll();
+
     // Convert
     Product convertToEntity(ProductDTO productDTO);
 
@@ -26,5 +28,11 @@ public interface ProductService {
     List<Product> convertToListEntity(List<ProductDTO> lDtos);
 
     List<ProductDTO> convertToListDTO(List<Product> lProducts);
+
+    List<ProductDTO> deleteResourceDTO(List<ProductDTO> list);
+
+    // Resource & Product
+
+    Product createProductWithResource(Product product);
 
 }

@@ -9,19 +9,25 @@ import org.springframework.stereotype.Service;
 import com.example.APISperenza.dto.ProductDTO;
 import com.example.APISperenza.exception.ResourceNotFoundException;
 import com.example.APISperenza.model.Product;
+import com.example.APISperenza.model.Resource;
 import com.example.APISperenza.repository.ProductRepository;
+import com.example.APISperenza.repository.ResourceRepository;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
+    private final ResourceRepository resourceRepository;
+
     private final ModelMapper modelMapper;
 
     public ProductServiceImpl(ProductRepository productRepositoryRequest,
+            ResourceRepository resourceRepositoryRequest,
             ModelMapper modelMapperRequest) {
         this.productRepository = productRepositoryRequest;
         this.modelMapper = modelMapperRequest;
+        this.resourceRepository = resourceRepositoryRequest;
     }
 
     // ------------------------------- CRUD -------------------//
@@ -71,11 +77,18 @@ public class ProductServiceImpl implements ProductService {
         productRepository.delete(product);
     }
 
+    @Override
+    public void deleteAll() {
+        productRepository.deleteAll();
+
+    }
+
     // ------------------------------- Convert -------------------//
     @Override
     public Product convertToEntity(ProductDTO productDTO) {
 
         Product product = modelMapper.map(productDTO, Product.class);
+
         return product;
     }
 
@@ -104,6 +117,48 @@ public class ProductServiceImpl implements ProductService {
             list.add(productDTO);
         }
         return list;
+    }
+
+    // supprime les ressource DTO sur les product DTO
+    @Override
+    public List<ProductDTO> deleteResourceDTO(List<ProductDTO> list) {
+
+        List<ProductDTO> lDtos = new ArrayList<>();
+
+        for (ProductDTO productIterable : list) {
+
+            productIterable.setListResource(null);
+            lDtos.add(productIterable);
+        }
+        return lDtos;
+    }
+    // --------------------- Product & Resource ----------//
+
+    @Override
+    public Product createProductWithResource(Product product) {
+
+        if (product.getResourceForCreate() != null && !product.getResourceForCreate().isEmpty()) {
+
+            List<Product> lProducts = new ArrayList<>();
+            lProducts.add(product);
+            List<Resource> lResources = new ArrayList<>();
+
+            for (Resource resourceIterable : product.getResourceForCreate()) {
+
+                Resource resource = new Resource();
+                resource.setLargeur(resourceIterable.getLargeur());
+                resource.setLongueur(resourceIterable.getLongueur());
+                resource.setName(resourceIterable.getName());
+                resource.setProductsToCreate(lProducts);
+
+                resourceRepository.save(resource);
+                lResources.add(resource);
+            }
+            product.setResourceForCreate(lResources);
+
+        }
+
+        return productRepository.save(product);
     }
 
 }

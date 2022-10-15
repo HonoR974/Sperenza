@@ -1,5 +1,9 @@
 package com.example.APISperenza.dto;
 
+import java.util.List;
+
+import org.springframework.lang.Nullable;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,5 +26,8 @@ public class ProductDTO {
     private float largeur;
 
     private float longueur;
+
+    @Nullable
+    private List<ResourceDTO> listResource;
 
 }

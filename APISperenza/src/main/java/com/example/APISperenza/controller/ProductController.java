@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.APISperenza.dto.ProductDTO;
+import com.example.APISperenza.dto.ResourceDTO;
 import com.example.APISperenza.model.Product;
+import com.example.APISperenza.model.Resource;
 import com.example.APISperenza.service.ProductService;
+import com.example.APISperenza.service.ResourceService;
 
 @RestController
 @RequestMapping("/api/product/")
@@ -23,8 +26,12 @@ public class ProductController {
 
     private final ProductService productService;
 
-    public ProductController(ProductService productServiceRequest) {
+    private final ResourceService resourService;
+
+    public ProductController(ProductService productServiceRequest,
+            ResourceService resourceServiceRequest) {
         this.productService = productServiceRequest;
+        this.resourService = resourceServiceRequest;
     }
 
     @GetMapping("all")
@@ -76,6 +83,38 @@ public class ProductController {
 
         return new ResponseEntity<>("Deleted", HttpStatus.ACCEPTED);
 
+    }
+
+    @DeleteMapping("all")
+    public ResponseEntity<String> deleteAll() {
+
+        productService.deleteAll();
+
+        return new ResponseEntity<>("Deleted All", HttpStatus.ACCEPTED);
+
+    }
+
+    // ------------------------ CRUD -------------------------//
+
+    // ------------------------ Resource & Prodcut -------------------------//
+
+    // Create product with resource
+    // return product with ressource
+    @PostMapping("create/resource")
+    public ResponseEntity<ProductDTO> createproductWithResource(@RequestBody ProductDTO productDTO) {
+
+        Product product1 = productService.convertToEntity(productDTO);
+        List<Resource> lResources = resourService.convertToListEntity(productDTO.getListResource());
+
+        product1.setResourceForCreate(lResources);
+
+        Product productFinal = productService.createProductWithResource(product1);
+
+        ProductDTO productDTO2 = productService.convertToDTO(productFinal);
+        List<ResourceDTO> lDtos = resourService.convertToListDTO(productFinal.getResourceForCreate());
+        productDTO.setListResource(lDtos);
+
+        return new ResponseEntity<>(productDTO, HttpStatus.CREATED);
     }
 
 }
