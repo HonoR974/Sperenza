@@ -31,6 +31,12 @@ public class Resource {
     @ManyToMany(mappedBy = "resourceForCreate")
     private List<Product> productsToCreate;
 
+    @ManyToMany(mappedBy = "lResources")
+    private List<Fournisseur> lFournisseurs;
+
+    @ManyToMany(mappedBy = "listeResource")
+    private List<Stock> lStocks;
+
     @Override
     public String toString() {
         return "Resource [id=" + id +
