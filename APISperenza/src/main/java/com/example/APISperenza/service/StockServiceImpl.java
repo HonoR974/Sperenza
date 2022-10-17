@@ -31,7 +31,7 @@ public class StockServiceImpl implements StockService {
     @Override
     public Stock getByID(long id) {
 
-        return stockRepository.findByID(id)
+        return stockRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Le stock avec l'id " + id + " n'existe pas "));
     }
@@ -45,7 +45,7 @@ public class StockServiceImpl implements StockService {
     @Override
     public Stock updateStockByID(long id, Stock stock) {
 
-        Stock stock2 = stockRepository.findByID(id)
+        Stock stock2 = stockRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Le stock avec l'id " + id + " n'existe pas "));
 
@@ -58,7 +58,7 @@ public class StockServiceImpl implements StockService {
     @Override
     public void deleteStockByID(long id) {
 
-        Stock stock = stockRepository.findByID(id)
+        Stock stock = stockRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Le stock avec l'id " + id + " n'existe pas "));
 
@@ -91,7 +91,8 @@ public class StockServiceImpl implements StockService {
         List<Stock> list = new ArrayList<>();
 
         for (StockDTO stockDTO : lDtos) {
-            list.add(modelMapper.map(stockDTO, Stock.class));
+            Stock stock = modelMapper.map(stockDTO, Stock.class);
+            list.add(stock);
         }
         return list;
     }
@@ -102,7 +103,8 @@ public class StockServiceImpl implements StockService {
         List<StockDTO> list2 = new ArrayList<>();
 
         for (Stock stock : list) {
-            list2.add(modelMapper.map(stock, StockDTO.class));
+            StockDTO stockDTO = modelMapper.map(stock, StockDTO.class);
+            list2.add(stockDTO);
         }
         return list2;
     }

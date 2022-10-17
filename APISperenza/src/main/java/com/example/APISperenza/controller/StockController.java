@@ -86,4 +86,10 @@ public class StockController {
 
     }
 
+    // -------------------------- CRUD -------------------------//
+
+    // get All stock with resources DTO
+
+    // get Stock with resources DTO
+
 }

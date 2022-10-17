@@ -10,6 +10,6 @@ import com.example.APISperenza.model.Stock;
 @Repository
 public interface StockRepository extends JpaRepository<Stock, Long> {
 
-    Optional<Stock> findByID(long id);
+    Optional<Stock> findById(long id);
 
 }
