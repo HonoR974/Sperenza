@@ -8,4 +8,10 @@ import lombok.Setter;
 public class LoginDTO {
     private String username;
     private String password;
+
+    @Override
+    public String toString() {
+        return "LoginDTO [username=" + username + ", password=" + password + "]";
+    }
+
 }
