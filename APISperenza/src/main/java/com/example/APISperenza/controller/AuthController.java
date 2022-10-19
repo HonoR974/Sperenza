@@ -21,6 +21,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
@@ -70,15 +71,25 @@ public class AuthController {
 
     //
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<JwtResponseDTO> login(@RequestBody LoginDTO loginDTO) {
 
         System.out.println("\n login " + loginDTO.toString());
 
-        Authentication authentication = daoAuthenticationProvider.authenticate(
-                UsernamePasswordAuthenticationToken.unauthenticated(loginDTO.getUsername(), loginDTO.getPassword()));
+        UserDetails user = userManager.loadUserByUsername(loginDTO.getUsername());
 
-        System.out.println("\n authentication " + authentication.getPrincipal().toString());
-        return ResponseEntity.ok(tokenGenerator.createToken(authentication));
+        Authentication authentication = UsernamePasswordAuthenticationToken.authenticated(user,
+                loginDTO.getPassword(), Collections.EMPTY_LIST);
+
+        System.out.println("\n authentication login ");
+
+        TokenDTO tokenDTO = tokenGenerator.createToken(authentication);
+
+        JwtResponseDTO jwtResponseDTO = new JwtResponseDTO(loginDTO.getUsername(), tokenDTO.getAccessToken(),
+                tokenDTO.getRefreshToken());
+
+        System.out.println("\n jwtResponseDTO " + jwtResponseDTO.toString());
+
+        return new ResponseEntity<>(jwtResponseDTO, HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/signin")
@@ -86,9 +97,10 @@ public class AuthController {
 
         System.out.println("\n singin  " + loginDTO.toString());
 
-        Authentication authentication = UsernamePasswordAuthenticationToken.authenticated(loginDTO.getUsername(),
-                loginDTO.getPassword(),
-                Collections.EMPTY_LIST);
+        Authentication authentication = daoAuthenticationProvider.authenticate(
+                UsernamePasswordAuthenticationToken.unauthenticated(loginDTO.getUsername(), loginDTO.getPassword()));
+
+        System.out.println("\n authentication  " + loginDTO.toString());
 
         TokenDTO tokenDTO = tokenGenerator.createToken(authentication);
 
