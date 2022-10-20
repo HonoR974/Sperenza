@@ -31,6 +31,8 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -85,13 +87,12 @@ public class WebSecurity {
                 .cors().disable()
                 .httpBasic().disable()
 
-                .oauth2Login(
-                        oauth2 -> oauth2
-                                .loginPage("/login/oauth2")
-                                .authorizationEndpoint(authorization -> authorization
-                                        .baseUri("/login/oauth2/authorization"))
-                                .redirectionEndpoint(redirection -> redirection
-                                        .baseUri("/login/oauth2/callback/*")))
+                .oauth2Login()
+
+                .authorizationEndpoint(authorization -> authorization
+                        .baseUri("/login/oauth2/authorization"))
+
+                .and()
 
                 .oauth2ResourceServer(
                         (oauth2) -> oauth2.jwt((jwt) -> jwt.jwtAuthenticationConverter(jwtToUserConverter)))
@@ -185,14 +186,14 @@ public class WebSecurity {
             return CommonOAuth2Provider.GITHUB.getBuilder(client)
                     .clientId(clientId)
                     .clientSecret(clientSecret)
-                    .redirectUri(BASE_URL + "/login/oauth2/callback/" + clientId)
                     .build();
         }
         if (client.equals("google")) {
             return CommonOAuth2Provider.GOOGLE.getBuilder(client)
                     .clientId(clientId)
                     .clientSecret(clientSecret)
-                    .redirectUri(BASE_URL + "/login/oauth2/callback/").build();
+                    .redirectUri(BASE_URL + "/login/oauth2/code/")
+                    .build();
         }
 
         return null;
