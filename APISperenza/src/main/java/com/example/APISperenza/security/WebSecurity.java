@@ -51,6 +51,8 @@ import org.springframework.security.provisioning.UserDetailsManager;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurity {
 
+    private String BASE_URL = "http://localhost:";
+
     private static List<String> clients = Arrays.asList("github", "google", "facebook");
 
     private static String CLIENT_PROPERTY_KEY = "spring.security.oauth2.client.registration.";
@@ -87,7 +89,9 @@ public class WebSecurity {
                         oauth2 -> oauth2
                                 .loginPage("/login/oauth2")
                                 .authorizationEndpoint(authorization -> authorization
-                                        .baseUri("/login/oauth2/authorization")))
+                                        .baseUri("/login/oauth2/authorization"))
+                                .redirectionEndpoint(redirection -> redirection
+                                        .baseUri("/login/oauth2/callback/*")))
 
                 .oauth2ResourceServer(
                         (oauth2) -> oauth2.jwt((jwt) -> jwt.jwtAuthenticationConverter(jwtToUserConverter)))
@@ -179,11 +183,16 @@ public class WebSecurity {
 
         if (client.equals("github")) {
             return CommonOAuth2Provider.GITHUB.getBuilder(client)
-                    .clientId(clientId).clientSecret(clientSecret).build();
+                    .clientId(clientId)
+                    .clientSecret(clientSecret)
+                    .redirectUri(BASE_URL + "/login/oauth2/callback/" + clientId)
+                    .build();
         }
         if (client.equals("google")) {
             return CommonOAuth2Provider.GOOGLE.getBuilder(client)
-                    .clientId(clientId).clientSecret(clientSecret).build();
+                    .clientId(clientId)
+                    .clientSecret(clientSecret)
+                    .redirectUri(BASE_URL + "/login/oauth2/callback/").build();
         }
 
         return null;

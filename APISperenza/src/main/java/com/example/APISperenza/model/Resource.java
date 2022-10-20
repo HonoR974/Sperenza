@@ -24,6 +24,7 @@ public class Resource {
 
     private String name;
 
+    // constraint 2 apres virgules
     private float largeur;
 
     private float longueur;
