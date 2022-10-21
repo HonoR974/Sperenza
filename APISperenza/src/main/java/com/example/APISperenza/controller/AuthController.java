@@ -22,103 +22,229 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 
+import java.security.Principal;
 import java.util.Collections;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    UserDetailsManager userDetailsManager;
+        @Autowired
+        UserDetailsManager userDetailsManager;
 
-    @Autowired
-    UserManager userManager;
+        @Autowired
+        UserManager userManager;
 
-    @Autowired
-    TokenGenerator tokenGenerator;
+        @Autowired
+        TokenGenerator tokenGenerator;
 
-    @Autowired
-    DaoAuthenticationProvider daoAuthenticationProvider;
+        @Autowired
+        DaoAuthenticationProvider daoAuthenticationProvider;
 
-    @Autowired
-    @Qualifier("jwtRefreshTokenAuthProvider")
-    JwtAuthenticationProvider refreshTokenAuthProvider;
+        @Autowired
+        @Qualifier("jwtRefreshTokenAuthProvider")
+        JwtAuthenticationProvider refreshTokenAuthProvider;
 
-    @PostMapping("/register")
-    public ResponseEntity register(@RequestBody SignupDTO signupDTO) {
+        private final OAuth2AuthorizedClientService authorizedClientService;
 
-        System.out.println("\n signupDTO " + signupDTO.toString());
+        public AuthController(OAuth2AuthorizedClientService authorizedClientService) {
+                this.authorizedClientService = authorizedClientService;
+        }
 
-        User user = new User(signupDTO.getUsername(), signupDTO.getPassword());
-        userDetailsManager.createUser(user);
+        @PostMapping("/register")
+        public ResponseEntity register(@RequestBody SignupDTO signupDTO) {
 
-        Authentication authentication = UsernamePasswordAuthenticationToken.authenticated(user, signupDTO.getPassword(),
-                Collections.EMPTY_LIST);
+                System.out.println("\n signupDTO " + signupDTO.toString());
 
-        System.out.println("\n authentication register  ");
+                User user = new User(signupDTO.getUsername(), signupDTO.getPassword());
+                userDetailsManager.createUser(user);
 
-        return ResponseEntity.ok(tokenGenerator.createToken(authentication));
-    }
+                Authentication authentication = UsernamePasswordAuthenticationToken.authenticated(user,
+                                signupDTO.getPassword(),
+                                Collections.EMPTY_LIST);
 
-    //
-    @PostMapping("/login")
-    public ResponseEntity<JwtResponseDTO> login(@RequestBody LoginDTO loginDTO) {
+                System.out.println("\n authentication register  ");
 
-        System.out.println("\n login " + loginDTO.toString());
+                return ResponseEntity.ok(tokenGenerator.createToken(authentication));
+        }
 
-        UserDetails user = userManager.loadUserByUsername(loginDTO.getUsername());
+        //
+        @PostMapping("/login")
+        public ResponseEntity<JwtResponseDTO> login(@RequestBody LoginDTO loginDTO) {
 
-        Authentication authentication = UsernamePasswordAuthenticationToken.authenticated(user,
-                loginDTO.getPassword(), Collections.EMPTY_LIST);
+                System.out.println("\n login " + loginDTO.toString());
 
-        System.out.println("\n authentication login ");
+                UserDetails user = userManager.loadUserByUsername(loginDTO.getUsername());
 
-        TokenDTO tokenDTO = tokenGenerator.createToken(authentication);
+                Authentication authentication = UsernamePasswordAuthenticationToken.authenticated(user,
+                                loginDTO.getPassword(), Collections.EMPTY_LIST);
 
-        JwtResponseDTO jwtResponseDTO = new JwtResponseDTO(loginDTO.getUsername(), tokenDTO.getAccessToken(),
-                tokenDTO.getRefreshToken());
+                System.out.println("\n authentication login ");
 
-        System.out.println("\n jwtResponseDTO " + jwtResponseDTO.toString());
+                TokenDTO tokenDTO = tokenGenerator.createToken(authentication);
 
-        return new ResponseEntity<>(jwtResponseDTO, HttpStatus.ACCEPTED);
-    }
+                JwtResponseDTO jwtResponseDTO = new JwtResponseDTO(loginDTO.getUsername(), tokenDTO.getAccessToken(),
+                                tokenDTO.getRefreshToken());
 
-    @PostMapping("/signin")
-    public ResponseEntity<JwtResponseDTO> signin(@RequestBody LoginDTO loginDTO) throws Exception {
+                System.out.println("\n jwtResponseDTO " + jwtResponseDTO.toString());
 
-        System.out.println("\n singin  " + loginDTO.toString());
+                return new ResponseEntity<>(jwtResponseDTO, HttpStatus.ACCEPTED);
+        }
 
-        Authentication authentication = daoAuthenticationProvider.authenticate(
-                UsernamePasswordAuthenticationToken.unauthenticated(loginDTO.getUsername(), loginDTO.getPassword()));
+        @PostMapping("/signin")
+        public ResponseEntity<JwtResponseDTO> signin(@RequestBody LoginDTO loginDTO) throws Exception {
 
-        System.out.println("\n authentication  " + loginDTO.toString());
+                System.out.println("\n singin  " + loginDTO.toString());
 
-        TokenDTO tokenDTO = tokenGenerator.createToken(authentication);
+                Authentication authentication = daoAuthenticationProvider.authenticate(
+                                UsernamePasswordAuthenticationToken.unauthenticated(loginDTO.getUsername(),
+                                                loginDTO.getPassword()));
 
-        JwtResponseDTO jwtResponseDTO = new JwtResponseDTO(loginDTO.getUsername(), tokenDTO.getAccessToken(),
-                tokenDTO.getRefreshToken());
+                System.out.println("\n authentication  " + loginDTO.toString());
 
-        System.out.println("\n jwtResponseDTO " + jwtResponseDTO.toString());
-        return new ResponseEntity<>(jwtResponseDTO, HttpStatus.ACCEPTED);
+                TokenDTO tokenDTO = tokenGenerator.createToken(authentication);
 
-    }
+                JwtResponseDTO jwtResponseDTO = new JwtResponseDTO(loginDTO.getUsername(), tokenDTO.getAccessToken(),
+                                tokenDTO.getRefreshToken());
 
-    @PostMapping("/token")
-    public ResponseEntity token(@RequestBody TokenDTO tokenDTO) {
-        Authentication authentication = refreshTokenAuthProvider
-                .authenticate(new BearerTokenAuthenticationToken(tokenDTO.getRefreshToken()));
-        Jwt jwt = (Jwt) authentication.getCredentials();
-        // check if present in db and not revoked, etc
+                System.out.println("\n jwtResponseDTO " + jwtResponseDTO.toString());
+                return new ResponseEntity<>(jwtResponseDTO, HttpStatus.ACCEPTED);
 
-        return ResponseEntity.ok(tokenGenerator.createToken(authentication));
-    }
+        }
+
+        @PostMapping("/token")
+        public ResponseEntity token(@RequestBody TokenDTO tokenDTO) {
+                Authentication authentication = refreshTokenAuthProvider
+                                .authenticate(new BearerTokenAuthenticationToken(tokenDTO.getRefreshToken()));
+                Jwt jwt = (Jwt) authentication.getCredentials();
+                // check if present in db and not revoked, etc
+
+                return ResponseEntity.ok(tokenGenerator.createToken(authentication));
+        }
+
+        /*
+         * @PostMapping("/signout")
+         * public ResponseEntity<?> logoutUser() {
+         * UserDetailsImpl userDetails = (UserDetailsImpl)
+         * SecurityContextHolder.getContext().getAuthentication()
+         * .getPrincipal();
+         * Long userId = userDetails.getId();
+         * refreshTokenService.deleteByUserId(userId);
+         * return ResponseEntity.ok(new MessageResponse("Log out successful!"));
+         * }
+         */
+
+        @GetMapping(value = "/sucess")
+        public String getMethod3Name(Principal user) {
+                StringBuffer userInfo = new StringBuffer();
+
+                if (user instanceof OAuth2AuthenticationToken) {
+
+                        System.out.println("\n user instance of OAuth2AuthenticationToken");
+
+                        userInfo.append(getOauth2LoginInfo(user));
+                } else if (user instanceof UsernamePasswordAuthenticationToken) {
+                        System.out.println("\n user instance of UsernamePasswordAuthenticationToken");
+                        userInfo.append(getUsernamePasswordLoginInfo(user));
+                        return "Sucess ";
+                }
+                return userInfo.toString();
+        }
+
+        // accéder aux informations protégées de l'utilisateur
+        // situées dans le token d’accès
+        private StringBuffer getUsernamePasswordLoginInfo(Principal user) {
+                StringBuffer usernameInfo = new StringBuffer();
+
+                UsernamePasswordAuthenticationToken token = ((UsernamePasswordAuthenticationToken) user);
+
+                System.out.println("\n token " + token.getPrincipal());
+
+                System.out.println("\n token " + user);
+
+                if (token.isAuthenticated()) {
+
+                        System.out.println("\n token caster " + (User) token.getPrincipal());
+
+                        User u = (User) token.getPrincipal();
+                        usernameInfo.append("Welcome , " + u.getUsername());
+                } else {
+                        usernameInfo.append("NA");
+                }
+                return usernameInfo;
+        }
+
+        /**
+         * La classe OAuth2AuthenticationToken contient
+         * des méthodes à utiliser pour des ressources protégées,
+         * comme celles contenues dans l’objet user .
+         */
+        private StringBuffer getOauth2LoginInfo(Principal user) {
+
+                StringBuffer protectedInfo = new StringBuffer();
+
+                OAuth2AuthenticationToken authToken = ((OAuth2AuthenticationToken) user);
+                OAuth2AuthorizedClient authClient = this.authorizedClientService
+                                .loadAuthorizedClient(authToken.getAuthorizedClientRegistrationId(),
+                                                authToken.getName());
+                OAuth2User principal = ((OAuth2AuthenticationToken) user).getPrincipal();
+
+                if (authToken.isAuthenticated()) {
+
+                        Map<String, Object> userAttributes = ((DefaultOAuth2User) authToken.getPrincipal())
+                                        .getAttributes();
+
+                        String userToken = authClient.getAccessToken().getTokenValue();
+                        protectedInfo.append("Welcome, " + userAttributes.get("name") + "<br><br>");
+                        protectedInfo.append("e-mail: " + userAttributes.get("email") + "<br><br>");
+                        protectedInfo.append("Access Token: " + userToken + "<br><br>");
+
+                        System.out.println("\n \n userAttributes " + userAttributes.toString());
+
+                        OidcIdToken idToken = getIdToken(principal);
+
+                        System.out.println("\n id token " + idToken.toString());
+                        if (idToken != null) {
+
+                                protectedInfo.append("idToken value: " + idToken.getTokenValue() + "<br><br>");
+                                protectedInfo.append("Token mapped values <br><br>");
+
+                                Map<String, Object> claims = idToken.getClaims();
+
+                                for (String key : claims.keySet()) {
+                                        protectedInfo.append("  " + key + ": " + claims.get(key) + "<br>");
+                                }
+                        }
+                } else {
+                        protectedInfo.append("NA");
+                }
+                return protectedInfo;
+        }
+
+        private OidcIdToken getIdToken(OAuth2User principal) {
+                if (principal instanceof DefaultOidcUser) {
+                        DefaultOidcUser oidcUser = (DefaultOidcUser) principal;
+                        return oidcUser.getIdToken();
+                }
+                return null;
+        }
+
 }

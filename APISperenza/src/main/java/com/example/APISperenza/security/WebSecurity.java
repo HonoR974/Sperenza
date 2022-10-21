@@ -87,12 +87,12 @@ public class WebSecurity {
                 .cors().disable()
                 .httpBasic().disable()
 
-                .oauth2Login()
+                .oauth2Login(login -> login
 
-                .authorizationEndpoint(authorization -> authorization
-                        .baseUri("/login/oauth2/authorization"))
-
-                .and()
+                        .authorizationEndpoint(authorization -> authorization
+                                .baseUri("/login/oauth2/authorization"))
+                        .redirectionEndpoint(redirection -> redirection
+                                .baseUri("/login/oauth2/callback/*")))
 
                 .oauth2ResourceServer(
                         (oauth2) -> oauth2.jwt((jwt) -> jwt.jwtAuthenticationConverter(jwtToUserConverter)))
@@ -192,7 +192,7 @@ public class WebSecurity {
             return CommonOAuth2Provider.GOOGLE.getBuilder(client)
                     .clientId(clientId)
                     .clientSecret(clientSecret)
-                    .redirectUri(BASE_URL + "/login/oauth2/code/")
+                    .redirectUri("{baseUrl}/login/oauth2/callback/{registrationId}")
                     .build();
         }
 
