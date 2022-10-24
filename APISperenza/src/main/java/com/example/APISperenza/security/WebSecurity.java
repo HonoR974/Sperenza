@@ -77,15 +77,15 @@ public class WebSecurity {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
+                .cors().disable()
+                .httpBasic().disable()
                 .authorizeHttpRequests((authorize) -> authorize
                         .antMatchers("/api/auth/register",
                                 "/api/auth/login",
                                 "/api/auth/signin")
                         .permitAll()
                         .anyRequest().authenticated())
-                .csrf().disable()
-                .cors().disable()
-                .httpBasic().disable()
 
                 .oauth2Login(login -> login
 

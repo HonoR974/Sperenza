@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -12,6 +13,7 @@ import { LoginComponent } from './_component/logs/login/login.component';
 import { RegisterComponent } from './_component/logs/register/register.component';
 import { FormsModule } from '@angular/forms';
 import { ProfileComponent } from './_component/profile/profile.component';
+import { authInterceptorProviders } from './_helpers/AuthInterceptor';
 
 @NgModule({
   declarations: [
@@ -24,8 +26,14 @@ import { ProfileComponent } from './_component/profile/profile.component';
     RegisterComponent,
     ProfileComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule],
-  providers: [],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule,
+  ],
+  providers: [authInterceptorProviders],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

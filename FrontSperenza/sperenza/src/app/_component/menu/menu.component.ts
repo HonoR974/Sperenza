@@ -1,15 +1,28 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { TokenStorageService } from 'src/app/_services/token-storage.service';
 
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.css']
+  styleUrls: ['./menu.component.css'],
 })
 export class MenuComponent implements OnInit {
+  isLogged = false;
 
-  constructor() { }
+  constructor(
+    private tokenStorage: TokenStorageService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+    if (this.tokenStorage.getToken()) {
+      this.isLogged = true;
+    }
   }
 
+  logout(): void {
+    this.tokenStorage.signOut();
+    window.location.reload();
+  }
 }

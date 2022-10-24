@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ import com.example.APISperenza.model.Resource;
 import com.example.APISperenza.service.ProductService;
 import com.example.APISperenza.service.ResourceService;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/resource/")
 public class ResourceController {
@@ -37,6 +39,8 @@ public class ResourceController {
     // ------------------------ CRUD -------------------------//
     @GetMapping("all")
     public ResponseEntity<List<ResourceDTO>> all() {
+
+        System.out.println("\n get all ");
 
         List<Resource> list = resourceService.getAll();
 
