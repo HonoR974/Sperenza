@@ -28,7 +28,9 @@ public class FileController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> createFile(@RequestBody File file) {
+    public ResponseEntity<?> createFile(@RequestBody FileDTO fileDTO) {
+        File file = fileService.convertToEntity(fileDTO);
+        System.out.println(("\n create file " + file));
         return ResponseEntity.ok(fileService.createFile(file));
     }
 
