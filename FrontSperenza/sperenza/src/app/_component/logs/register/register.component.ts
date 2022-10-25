@@ -88,6 +88,11 @@ export class RegisterComponent implements OnInit {
         console.log('value register ', value);
         dataResponse = value;
       },
+      error: (err) => {
+        console.error('erreur register ' + err);
+        //a ameliorer
+        this.router.navigate(['error']);
+      },
       complete: () => {
         this.submitted = true;
         console.log('complete dataResponse ', dataResponse);
