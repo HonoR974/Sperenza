@@ -14,6 +14,7 @@ import { RegisterComponent } from './_component/logs/register/register.component
 import { FormsModule } from '@angular/forms';
 import { ProfileComponent } from './_component/profile/profile.component';
 import { authInterceptorProviders } from './_helpers/AuthInterceptor';
+import { ErrorComponent } from './_component/error/error.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { authInterceptorProviders } from './_helpers/AuthInterceptor';
     LoginComponent,
     RegisterComponent,
     ProfileComponent,
+    ErrorComponent,
   ],
   imports: [
     BrowserModule,

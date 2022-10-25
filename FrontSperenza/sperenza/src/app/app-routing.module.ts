@@ -6,6 +6,7 @@ import { ListComponent } from './_component/resource/list/list.component';
 import { LoginComponent } from './_component/logs/login/login.component';
 import { RegisterComponent } from './_component/logs/register/register.component';
 import { ProfileComponent } from './_component/profile/profile.component';
+import { ErrorComponent } from './_component/error/error.component';
 
 const routes: Routes = [
   //Accueil
@@ -24,6 +25,9 @@ const routes: Routes = [
 
   //Profile
   { path: 'profile', component: ProfileComponent },
+
+  //error
+  { path: 'error', component: ErrorComponent },
 ];
 
 @NgModule({

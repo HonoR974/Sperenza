@@ -75,6 +75,9 @@ export class LoginComponent implements OnInit {
         console.log('value ', value);
         dataResponse = value;
       },
+      //todo implementer les erreurs de logs
+      //redirection sur une page d'erreur
+
       complete: () => {
         this.submitted = true;
         console.log('complete dataResponse ', dataResponse);

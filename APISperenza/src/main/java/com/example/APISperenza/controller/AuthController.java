@@ -72,11 +72,11 @@ public class AuthController {
         }
 
         @PostMapping("/register")
-        public ResponseEntity register(@RequestBody SignupDTO signupDTO) {
+        public ResponseEntity<JwtResponseDTO> register(@RequestBody SignupDTO signupDTO) {
 
                 System.out.println("\n signupDTO " + signupDTO.toString());
 
-                User user = new User(signupDTO.getUsername(), signupDTO.getPassword());
+                User user = new User(signupDTO.getUsername(), signupDTO.getPassword(), signupDTO.getEmail());
                 userDetailsManager.createUser(user);
 
                 Authentication authentication = UsernamePasswordAuthenticationToken.authenticated(user,
@@ -85,7 +85,11 @@ public class AuthController {
 
                 System.out.println("\n authentication register  ");
 
-                return ResponseEntity.ok(tokenGenerator.createToken(authentication));
+                TokenDTO tokenDTO = tokenGenerator.createToken(authentication);
+
+                JwtResponseDTO jwtResponseDTO = new JwtResponseDTO(user.getUsername(), tokenDTO.getAccessToken(),
+                                tokenDTO.getRefreshToken());
+                return new ResponseEntity<>(jwtResponseDTO, HttpStatus.CREATED);
         }
 
         //

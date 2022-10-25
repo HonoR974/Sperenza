@@ -42,52 +42,60 @@ export class RegisterComponent implements OnInit {
     this.userForm = this.formBuilder.group(
       {
         username: [
-          '',
-          Validators.required,
-          Validators.minLength(6),
-          Validators.maxLength(20),
+          [
+            null,
+            Validators.required,
+            Validators.minLength(6),
+            Validators.maxLength(20),
+          ],
         ],
         password: [
-          '',
-          Validators.required,
-          Validators.minLength(5),
-          Validators.maxLength(25),
+          [
+            null,
+            Validators.required,
+            Validators.minLength(6),
+            Validators.maxLength(20),
+          ],
         ],
         confirmPassword: [
-          '',
-          Validators.required,
-          Validators.minLength(5),
-          Validators.maxLength(25),
+          [
+            null,
+            Validators.required,
+            Validators.minLength(6),
+            Validators.maxLength(20),
+          ],
         ],
-        email: ['', Validators.required, Validators.email],
-        acceptTerms: [false, Validators.requiredTrue],
+        email: [[null, Validators.required, Validators.email]],
+        acceptTerms: [[false, Validators.requiredTrue]],
       },
       {
         validators: [Validation.match('password', 'confirmPassword')],
       }
     );
+
+    this.userForm.reset();
   }
 
   onSubmit(): void {
-    const username = this.userForm.get(['username']);
+    let dataResponse: any, username: string, password: string, email: string;
 
-    //const password = this.f['password'];
+    username = this.userForm.get(['username'])?.value;
+    password = this.userForm.get(['password'])?.value;
+    email = this.userForm.get(['email'])?.value;
 
-    let token: any, data: any;
-
-    if (false) {
-      this.authService.login(token, data).subscribe({
-        next(data) {
-          console.log('data ' + data);
-          console.log('token ' + data.jwt);
-          token = data.jwt;
-          data = data;
-        },
-        error(er) {
-          console.log('erreur ' + er);
-        },
-      });
-    }
+    this.authService.register(username, email, password).subscribe({
+      next: (value) => {
+        console.log('value register ', value);
+        dataResponse = value;
+      },
+      complete: () => {
+        this.submitted = true;
+        console.log('complete dataResponse ', dataResponse);
+        this.tokenStorage.saveToken(dataResponse.accessToken);
+        this.tokenStorage.saveUser(dataResponse.username);
+        this.resource();
+      },
+    });
 
     this.submitted = true;
 
@@ -113,5 +121,9 @@ export class RegisterComponent implements OnInit {
 
   accueil() {
     this.router.navigate(['home']);
+  }
+
+  resource() {
+    this.router.navigate(['resource/list']);
   }
 }
