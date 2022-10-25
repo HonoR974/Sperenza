@@ -7,6 +7,7 @@ import { LoginComponent } from './_component/logs/login/login.component';
 import { RegisterComponent } from './_component/logs/register/register.component';
 import { ProfileComponent } from './_component/profile/profile.component';
 import { ErrorComponent } from './_component/error/error.component';
+import { CorpsComponent } from './_component/resource/corps/corps.component';
 
 const routes: Routes = [
   //Accueil
@@ -17,6 +18,7 @@ const routes: Routes = [
   { path: 'presentation', component: PresentationComponent },
 
   //Resource
+  { path: 'resource', component: CorpsComponent },
   { path: 'resource/list', component: ListComponent },
 
   //Logs

@@ -1,0 +1,12 @@
+<div>
+  <input type="file" (change)="onSelect($event)" />
+</div>
+<div>
+  <button class="btn btn-success" (click)="onImageUpdate()">Upload</button>
+</div>
+
+<div>
+  <div *ngFor="let item of listFileAPI">
+    <img [src]="item.url" alt="" style="height: 400px; width: 200px" />
+  </div>
+</div>

@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 
 import com.example.APISperenza.dto.ResourceDTO;
 import com.example.APISperenza.exception.ResourceNotFoundException;
+import com.example.APISperenza.model.File;
 import com.example.APISperenza.model.Product;
 import com.example.APISperenza.model.Resource;
+import com.example.APISperenza.repository.FileRepository;
 import com.example.APISperenza.repository.ProductRepository;
 import com.example.APISperenza.repository.ResourceRepository;
 
@@ -21,14 +23,18 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final ProductRepository productRepository;
 
+    private final FileRepository fileRepository;
+
     private final ModelMapper modelMapper;
 
     public ResourceServiceImpl(ResourceRepository resourceRepositoryReq,
             ModelMapper modelMapper,
-            ProductRepository productRepositoryReq) {
+            ProductRepository productRepositoryReq,
+            FileRepository fileRepositoryReq) {
         this.resourceRepository = resourceRepositoryReq;
         this.modelMapper = modelMapper;
         this.productRepository = productRepositoryReq;
+        this.fileRepository = fileRepositoryReq;
     }
 
     @Override
@@ -57,6 +63,26 @@ public class ResourceServiceImpl implements ResourceService {
 
         resourceRepository.save(resource);
 
+    }
+
+    @Override
+    public Resource createComptleteResource(Resource resource) {
+
+        // file
+        for (File iterable_File : resource.getLFiles()) {
+
+            List<Resource> lResources = iterable_File.getLResources();
+
+            if (!lResources.contains(resource)) {
+                lResources.add(resource);
+            }
+            iterable_File.setLResources(lResources);
+            fileRepository.save(iterable_File);
+        }
+
+        // product
+
+        return null;
     }
 
     @Override

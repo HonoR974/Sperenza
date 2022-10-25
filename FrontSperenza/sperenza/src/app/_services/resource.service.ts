@@ -19,4 +19,8 @@ export class ResourceService {
   getAllResource(): Observable<Resource[]> {
     return this.http.get<Resource[]>(BASE_URL + 'all', httpOptions);
   }
+
+  createResourceComplete(resource: Resource): Observable<any> {
+    return this.http.post(BASE_URL + 'create/complete', resource);
+  }
 }

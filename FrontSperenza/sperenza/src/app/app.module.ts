@@ -15,6 +15,8 @@ import { FormsModule } from '@angular/forms';
 import { ProfileComponent } from './_component/profile/profile.component';
 import { authInterceptorProviders } from './_helpers/AuthInterceptor';
 import { ErrorComponent } from './_component/error/error.component';
+import { CreateComponent } from './_component/resource/create/create.component';
+import { CorpsComponent } from './_component/resource/corps/corps.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +29,8 @@ import { ErrorComponent } from './_component/error/error.component';
     RegisterComponent,
     ProfileComponent,
     ErrorComponent,
+    CreateComponent,
+    CorpsComponent,
   ],
   imports: [
     BrowserModule,

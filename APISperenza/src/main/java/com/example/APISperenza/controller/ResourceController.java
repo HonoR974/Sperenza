@@ -14,10 +14,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.APISperenza.dto.FileDTO;
 import com.example.APISperenza.dto.ProductDTO;
 import com.example.APISperenza.dto.ResourceDTO;
+import com.example.APISperenza.model.File;
 import com.example.APISperenza.model.Product;
 import com.example.APISperenza.model.Resource;
+import com.example.APISperenza.service.FileService;
 import com.example.APISperenza.service.ProductService;
 import com.example.APISperenza.service.ResourceService;
 
@@ -30,10 +33,13 @@ public class ResourceController {
 
     private final ProductService productService;
 
+    private final FileService fileService;
+
     public ResourceController(ResourceService resourceService,
-            ProductService productService) {
+            ProductService productService, FileService fileService) {
         this.resourceService = resourceService;
         this.productService = productService;
+        this.fileService = fileService;
     }
 
     // ------------------------ CRUD -------------------------//
@@ -140,4 +146,22 @@ public class ResourceController {
 
         return new ResponseEntity<>(resourceDTO, HttpStatus.ACCEPTED);
     }
+
+    // ------------------------ Resource & Prodcut -------------------------//
+
+    @PostMapping("create/complete")
+    public ResponseEntity<ResourceDTO> createComplete(@RequestBody ResourceDTO resourceDTO) {
+
+        Resource resource = resourceService.convertToEntity(resourceDTO);
+        List<File> lFiles = fileService.convertToListEntity(resourceDTO.getLFileDTOs());
+        resource.setLFiles(lFiles);
+
+        Resource resourceNew = resourceService.createComptleteResource(resource);
+        ResourceDTO resourceDTO2 = resourceService.convertToDTO(resourceNew);
+        List<FileDTO> lFileDTOs = fileService.convertToListeDTO(resourceNew.getLFiles());
+        resourceDTO2.setLFileDTOs(lFileDTOs);
+
+        return new ResponseEntity<>(resourceDTO2, HttpStatus.CREATED);
+    }
+
 }

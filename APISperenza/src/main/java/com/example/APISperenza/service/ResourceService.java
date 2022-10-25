@@ -18,6 +18,8 @@ public interface ResourceService {
 
     void saveResource(Resource resource);
 
+    Resource createComptleteResource(Resource resource);
+
     Resource updateResourceByI(long id, Resource resource);
 
     void deleteResourceById(long id);
