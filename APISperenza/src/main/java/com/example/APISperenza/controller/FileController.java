@@ -3,6 +3,7 @@ package com.example.APISperenza.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,16 +29,19 @@ public class FileController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> createFile(@RequestBody FileDTO fileDTO) {
+    public ResponseEntity<FileDTO> createFile(@RequestBody FileDTO fileDTO) {
         File file = fileService.convertToEntity(fileDTO);
         System.out.println(("\n create file " + file));
-        return ResponseEntity.ok(fileService.createFile(file));
+        File newFile = fileService.createFile(file);
+        FileDTO fDto = fileService.convertToDTO(newFile);
+
+        return new ResponseEntity<>(fDto, HttpStatus.ACCEPTED);
     }
 
     @GetMapping()
     public ResponseEntity<List<FileDTO>> getAllFile() {
         List<FileDTO> list = fileService.convertToListeDTO(fileService.getAll());
-        return ResponseEntity.ok(list);
+        return new ResponseEntity<>(list, HttpStatus.ACCEPTED);
     }
 
     @GetMapping("{id}")

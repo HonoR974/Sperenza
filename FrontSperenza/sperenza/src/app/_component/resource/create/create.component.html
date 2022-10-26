@@ -1,14 +1,50 @@
-<div>
-  <input type="file" (change)="onChange($event)" />
-</div>
-<div>
-  <button class="btn btn-success" (click)="imageUpdate()">Upload</button>
-</div>
+<header></header>
+<section>
+  <div class="card-container">
+    <ng-container *ngFor="let item of renderImages">
+      <div class="blog-card">
+        <img [src]="item" alt="" />
+      </div>
+    </ng-container>
+
+    <div class="blog-card blog-card-no-image" *ngIf="renderImages.length == 0">
+      <h1>NO CONTENT</h1>
+    </div>
+
+    <div
+      class="custom-dropzone"
+      ngx-dropzone
+      [accept]="'image/*'"
+      (change)="onSelect($event)"
+    >
+      <ngx-dropzone-label>
+        <div>
+          <h2>Try me! Just a Click away :)</h2>
+        </div>
+      </ngx-dropzone-label>
+      <ngx-dropzone-image-preview
+        ngProjectAs="ngx-dropzone-preview"
+        *ngFor="let f of files"
+        [file]="f"
+        [removable]="true"
+        (removed)="onRemove(f)"
+      >
+        <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+      </ngx-dropzone-image-preview>
+    </div>
+  </div>
+
+  <button class="purple" (click)="onImageUpdate()">Upload</button>
+</section>
+
+<footer></footer>
+<mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
 <div>
   <div style="height: 200px"><h1>List</h1></div>
 
   <div *ngFor="let item of listFileAPI">
+    {{item.name}}
     <img [src]="item.url" alt="" style="height: 400px; width: 200px" />
   </div>
 </div>
