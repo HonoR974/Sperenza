@@ -39,12 +39,3 @@
 
 <footer></footer>
 <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
-
-<div>
-  <div style="height: 200px"><h1>List</h1></div>
-
-  <div *ngFor="let item of listFileAPI">
-    {{item.name}}
-    <img [src]="item.url" alt="" style="height: 400px; width: 200px" />
-  </div>
-</div>

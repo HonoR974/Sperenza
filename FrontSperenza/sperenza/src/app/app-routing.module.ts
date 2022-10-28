@@ -26,7 +26,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
 
   //Profile
-  { path: 'profile', component: ProfileComponent },
+  { path: 'profile/:username', component: ProfileComponent },
 
   //error
   { path: 'error', component: ErrorComponent },
