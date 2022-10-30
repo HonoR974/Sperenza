@@ -20,6 +20,12 @@ import com.example.APISperenza.model.Resource;
 import com.example.APISperenza.service.ProductService;
 import com.example.APISperenza.service.ResourceService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
+
+@Api("API pour les opérations CRUD sur les produits")
 @RestController
 @RequestMapping("/api/product/")
 public class ProductController {
@@ -34,6 +40,8 @@ public class ProductController {
         this.resourService = resourceServiceRequest;
     }
 
+    //decrit la methode 
+    @ApiOperation(value = "Récupère touts les produits ")
     @GetMapping("all")
     public ResponseEntity<List<ProductDTO>> all() {
 
@@ -44,8 +52,13 @@ public class ProductController {
         return new ResponseEntity<>(lProductDTOs, HttpStatus.ACCEPTED);
     }
 
+    @ApiOperation(value = "Récupère un produit selon son ID ")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved"),
+        @ApiResponse(code = 404, message = "Not found - The product with this id was not found ")
+      })
     @GetMapping("{id}")
-    public ResponseEntity<ProductDTO> id(@PathVariable long id) {
+    public ResponseEntity<ProductDTO> id(@PathVariable long id ,@ApiParam(name = "id", value = "Product id", example = "1") long _id) {
 
         Product product = productService.getByIdProduct(id);
 

@@ -1,4 +1,4 @@
-package com.example.APISperenza.security;
+package com.example.APISperenza.config;
 
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
