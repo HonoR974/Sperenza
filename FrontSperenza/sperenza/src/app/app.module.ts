@@ -2,6 +2,11 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgxDropzoneModule } from 'ngx-dropzone';
+import { CommonModule } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,6 +20,8 @@ import { FormsModule } from '@angular/forms';
 import { ProfileComponent } from './_component/profile/profile.component';
 import { authInterceptorProviders } from './_helpers/AuthInterceptor';
 import { ErrorComponent } from './_component/error/error.component';
+import { CreateComponent } from './_component/resource/create/create.component';
+import { CorpsComponent } from './_component/resource/corps/corps.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +34,8 @@ import { ErrorComponent } from './_component/error/error.component';
     RegisterComponent,
     ProfileComponent,
     ErrorComponent,
+    CreateComponent,
+    CorpsComponent,
   ],
   imports: [
     BrowserModule,
@@ -34,6 +43,11 @@ import { ErrorComponent } from './_component/error/error.component';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    NgxDropzoneModule,
+    CommonModule,
+    BrowserAnimationsModule, // required animations module
+    ToastrModule.forRoot(), // ToastrModule added
+    MatProgressBarModule,
   ],
   providers: [authInterceptorProviders],
   bootstrap: [AppComponent],

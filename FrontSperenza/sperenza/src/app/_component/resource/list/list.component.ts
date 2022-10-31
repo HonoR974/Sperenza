@@ -21,8 +21,6 @@ export class ListComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.tokenStorage.getToken()) {
-      console.log('token in list  ', this.tokenStorage.getToken());
-
       this.user = this.tokenStorage.getUser();
       this.isLoggedIn = true;
       this.getResource();
@@ -36,13 +34,11 @@ export class ListComponent implements OnInit {
     this.resourceService.getAllResource().subscribe({
       next: (value) => {
         response = value;
-        console.log('value list ', value);
       },
       error: (er) => {
         console.error('erreur ', er);
       },
       complete: () => {
-        console.log('complete ');
         this.resourceList = response;
       },
     });

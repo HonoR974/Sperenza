@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { User } from 'src/app/_class/user';
 import { TokenStorageService } from 'src/app/_services/token-storage.service';
 
 @Component({
@@ -9,6 +10,7 @@ import { TokenStorageService } from 'src/app/_services/token-storage.service';
 })
 export class MenuComponent implements OnInit {
   isLogged = false;
+  user!: User;
 
   constructor(
     private tokenStorage: TokenStorageService,
@@ -18,6 +20,7 @@ export class MenuComponent implements OnInit {
   ngOnInit(): void {
     if (this.tokenStorage.getToken()) {
       this.isLogged = true;
+      this.user = this.tokenStorage.getUser();
     }
   }
 
@@ -25,4 +28,6 @@ export class MenuComponent implements OnInit {
     this.tokenStorage.signOut();
     window.location.reload();
   }
+
+  search(): void {}
 }

@@ -28,4 +28,7 @@ public class ResourceDTO {
     @Nullable
     private List<ProductDTO> listProduct;
 
+    @Nullable
+    private List<FileDTO> lFileDTOs;
+
 }
