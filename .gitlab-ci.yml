@@ -31,7 +31,7 @@ deploy:jdk17:
   services:
     - mysql:8.0
   variables:
-    # Configure postgres service (https://hub.docker.com/_/postgres/)
+    
   MYSQL_DATABASE: back
   MYSQL_ROOT_PASSWORD: WorkShow1&
 
