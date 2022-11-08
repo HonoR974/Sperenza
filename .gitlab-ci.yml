@@ -1,0 +1,47 @@
+cache:
+  paths:
+    - /root/.m2/repository
+
+stages:
+  - build
+  - test
+  - visualize
+
+validate:jdk17:
+
+  stage: build
+  script:
+    - cd src
+    - mvn test-compile
+  image: maven:3.8.6-jdk-17
+
+
+validate:jdk17:
+  stage: build
+  script:
+    - cd src
+    - mvn test-compile
+  image: maven:3.8.6-jdk-17
+
+
+deploy:jdk17:
+
+  stage: test
+
+  services:
+    - mysql:8.0
+  variables:
+    # Configure postgres service (https://hub.docker.com/_/postgres/)
+  MYSQL_DATABASE: back
+  MYSQL_ROOT_PASSWORD: WorkShow1&
+
+  script:
+    - cd APISperenza
+    - mvn clean verify 
+    - cat myerp-coverage/target/site/jacoco-aggregate/index.html | grep -o '<tfoot>.*</tfoot>'
+  artifacts:
+    when: always
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+
+  image: maven:3.8.6-jdk-17

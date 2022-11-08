@@ -84,7 +84,9 @@ public class WebSecurity {
                 .authorizeHttpRequests((authorize) -> authorize
                         .antMatchers("/api/auth/register",
                                 "/api/auth/login",
-                                "/api/auth/signin")
+                                "/api/auth/signin",
+                                "/swagger-ui.html","/webjars/**","/v2/**"
+                                ,"/swagger-resources/**","/swagger-ui/**")
                         .permitAll()
                         .anyRequest().authenticated())
 
